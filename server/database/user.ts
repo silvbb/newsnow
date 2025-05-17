@@ -1,69 +1,107 @@
-import type { Database } from "db0"
-import type { UserInfo } from "#/types"
+import { supabase } from "./supabase";
+import type { UserInfo } from "#/types";
 
 export class UserTable {
-  private db
-  constructor(db: Database) {
-    this.db = db
-  }
-
+  /**
+   * 初始化用户表
+   */
   async init() {
-    await this.db.prepare(`
-      CREATE TABLE IF NOT EXISTS user (
-        id TEXT PRIMARY KEY,
-        email TEXT,
-        data TEXT,
-        type TEXT,
-        created INTEGER,
-        updated INTEGER
-      );
-    `).run()
-    await this.db.prepare(`
-      CREATE INDEX IF NOT EXISTS idx_user_id ON user(id);
-    `).run()
-    logger.success(`init user table`)
+    // Supabase 会自动创建表，这里不需要手动创建
+    const { error } = await supabase.from("user").select("id").limit(1);
+    if (error?.message.includes('relation "user" does not exist')) {
+      await supabase.query(`
+        CREATE TABLE IF NOT EXISTS user (
+          id TEXT PRIMARY KEY,
+          email TEXT,
+          data TEXT,
+          type TEXT,
+          created BIGINT,
+          updated BIGINT
+        );
+        CREATE INDEX IF NOT EXISTS idx_user_id ON user(id);
+      `);
+    }
   }
 
+  /**
+   * 添加用户
+   */
   async addUser(id: string, email: string, type: "github") {
-    const u = await this.getUser(id)
-    const now = Date.now()
-    if (!u) {
-      await this.db.prepare(`INSERT INTO user (id, email, data, type, created, updated) VALUES (?, ?, ?, ?, ?, ?)`)
-        .run(id, email, "", type, now, now)
-      logger.success(`add user ${id}`)
-    } else if (u.email !== email && u.type !== type) {
-      await this.db.prepare(`UPDATE user SET email = ?, updated = ? WHERE id = ?`).run(email, now, id)
-      logger.success(`update user ${id} email`)
-    } else {
-      logger.info(`user ${id} already exists`)
+    const now = Date.now();
+    const { data: existingUser } = await supabase
+      .from("user")
+      .select()
+      .eq("id", id)
+      .single();
+
+    if (!existingUser) {
+      const { error } = await supabase.from("user").insert({
+        id,
+        email,
+        data: "",
+        type,
+        created: now,
+        updated: now,
+      });
+      if (error) throw error;
+    } else if (existingUser.email !== email || existingUser.type !== type) {
+      const { error } = await supabase
+        .from("user")
+        .update({ email, updated: now })
+        .eq("id", id);
+      if (error) throw error;
     }
   }
 
-  async getUser(id: string) {
-    return (await this.db.prepare(`SELECT id, email, data, created, updated FROM user WHERE id = ?`).get(id)) as UserInfo
+  /**
+   * 获取用户信息
+   */
+  async getUser(id: string): Promise<UserInfo> {
+    const { data, error } = await supabase
+      .from("user")
+      .select("id, email, data, created, updated")
+      .eq("id", id)
+      .single();
+
+    if (error) throw error;
+    return data as UserInfo;
   }
 
+  /**
+   * 设置用户数据
+   */
   async setData(key: string, value: string, updatedTime = Date.now()) {
-    const state = await this.db.prepare(
-      `UPDATE user SET data = ?, updated = ? WHERE id = ?`,
-    ).run(value, updatedTime, key)
-    if (!state.success) throw new Error(`set user ${key} data failed`)
-    logger.success(`set ${key} data`)
+    const { error } = await supabase
+      .from("user")
+      .update({ data: value, updated: updatedTime })
+      .eq("id", key);
+
+    if (error) throw error;
   }
 
+  /**
+   * 获取用户数据
+   */
   async getData(id: string) {
-    const row: any = await this.db.prepare(`SELECT data, updated FROM user WHERE id = ?`).get(id)
-    if (!row) throw new Error(`user ${id} not found`)
-    logger.success(`get ${id} data`)
-    return row as {
-      data: string
-      updated: number
-    }
+    const { data, error } = await supabase
+      .from("user")
+      .select("data, updated")
+      .eq("id", id)
+      .single();
+
+    if (error) throw error;
+    return data as {
+      data: string;
+      updated: number;
+    };
   }
 
+  /**
+   * 删除用户
+   */
   async deleteUser(key: string) {
-    const state = await this.db.prepare(`DELETE FROM user WHERE id = ?`).run(key)
-    if (!state.success) throw new Error(`delete user ${key} failed`)
-    logger.success(`delete user ${key}`)
+    const { error } = await supabase.from("user").delete().eq("id", key);
+
+    if (error) throw error;
   }
 }
