@@ -12,6 +12,9 @@ const nitroOption: Parameters<typeof viteNitro>[0] = {
     plugins: [RollopGlob()],
   },
   sourceMap: false,
+  // 将 'pg-native' 添加到 externals 列表中
+  // 这告诉 Nitro 在构建时将 'pg-native' 视为外部模块，不进行打包
+  externals: ["pg-native"],
   // 默认配置，可以在本地开发时使用 SQLite 或其他数据库
   // 或者在这里直接配置为 Supabase (PostgreSQL) 用于本地开发
   database: {
