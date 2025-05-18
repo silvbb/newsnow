@@ -20,6 +20,17 @@ export default defineConfig({
       "@shared": join(projectDir, "shared"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // 将大型依赖项分离到单独的块中
+          vendor: ["vue", "vue-router"],
+          // 可以根据需要添加更多的块
+        },
+      },
+    },
+  },
   plugins: [
     TanStackRouterVite({
       // error with auto import and vite-plugin-pwa
@@ -27,10 +38,13 @@ export default defineConfig({
     }),
     unimport.vite({
       dirs: ["src/hooks", "shared", "src/utils", "src/atoms"],
-      presets: ["react", {
-        from: "jotai",
-        imports: ["atom", "useAtom", "useAtomValue", "useSetAtom"],
-      }],
+      presets: [
+        "react",
+        {
+          from: "jotai",
+          imports: ["atom", "useAtom", "useAtomValue", "useSetAtom"],
+        },
+      ],
       imports: [
         { from: "clsx", name: "clsx", as: "$" },
         { from: "jotai/utils", name: "atomWithStorage" },
