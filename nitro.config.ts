@@ -53,7 +53,7 @@ if (process.env.VERCEL || process.env.CF_PAGES || process.env.CF_WORKERS) {
   if (process.env.VERCEL) {
     nitroOption.preset = "vercel"
   } else if (process.env.CF_PAGES) {
-    nitroOption.preset = "cloudflare"
+    nitroOption.preset = "cloudflare-pages"
     // Cloudflare Pages 可能需要这个 unenv 配置
     nitroOption.unenv = {
       alias: {
@@ -82,6 +82,12 @@ if (process.env.VERCEL || process.env.CF_PAGES || process.env.CF_WORKERS) {
         "pg-native": "node:buffer",
         "cloudflare:sockets": "node:buffer",
       },
+    }
+    // 添加一个明确的输出目录配置
+    nitroOption.output = {
+      dir: join(projectDir, "dist/output"),
+      publicDir: join(projectDir, "dist/output/public"),
+      serverDir: join(projectDir, "dist/output/server"),
     }
   }
 
