@@ -1,4 +1,3 @@
-// scripts/build-workers.js
 /**
  * 为 Cloudflare Workers 构建项目
  * 确保客户端构建完成后再进行服务器端构建
