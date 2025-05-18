@@ -62,6 +62,14 @@ if (process.env.VERCEL || process.env.CF_PAGES) {
         "cloudflare:sockets": "node:buffer",
       },
     }
+    nitroOption.database = {
+      default: {
+        connector: "postgresql",
+        options: {
+          url: process.env.DATABASE_URL,
+        },
+      },
+    }
   }
 
   // 配置 db0 使用 postgresql 连接器连接 Supabase
