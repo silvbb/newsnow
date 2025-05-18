@@ -13,10 +13,16 @@ export default defineEventHandler(async (event) => {
         status: "cache",
         id: cache.id,
         items: cache.items,
-        updatedTime: now - cache.updated < sources[cache.id].interval ? now : cache.updated,
+        updatedTime:
+          now - cache.updated < sources[cache.id].interval
+            ? now
+            : cache.updated,
       })) as SourceResponse[]
     }
-  } catch {
-    //
+  } catch (e) {
+    // 捕获错误对象 e
+    logger.error("Error in /api/s/entire:", e) // 使用 logger 打印错误
+    // 您可以选择在这里重新抛出错误，或者返回一个错误响应给前端
+    // throw createError({ statusCode: 500, message: 'Failed to fetch data' });
   }
 })
