@@ -67,6 +67,8 @@ if (process.env.VERCEL || process.env.CF_PAGES) {
         connector: "postgresql",
         options: {
           url: process.env.DATABASE_URL,
+          // 可能需要的额外配置
+          ssl: { rejectUnauthorized: false },
         },
       },
     }
