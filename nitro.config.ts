@@ -55,7 +55,7 @@ if (process.env.VERCEL || process.env.CF_PAGES) {
     nitroOption.unenv = {
       // 不要使用展开运算符，直接设置 alias 对象
       alias: {
-        "pg-native": false, // 或使用 false
+        "pg-native": "false", // 或使用 false
       },
     }
   } else if (process.env.CF_PAGES) {
