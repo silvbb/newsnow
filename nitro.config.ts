@@ -48,7 +48,7 @@ const nitroOption: Parameters<typeof viteNitro>[0] = {
 }
 
 // Vercel 或 Cloudflare Pages 环境使用 Supabase (PostgreSQL)
-if (process.env.VERCEL || process.env.CF_PAGES) {
+if (process.env.VERCEL || process.env.CF_PAGES || process.env.CF_WORKERS) {
   // 根据平台设置预设
   if (process.env.VERCEL) {
     nitroOption.preset = "vercel"
@@ -70,6 +70,17 @@ if (process.env.VERCEL || process.env.CF_PAGES) {
           // 可能需要的额外配置
           ssl: { rejectUnauthorized: false },
         },
+      },
+    }
+  } else if (process.env.CF_WORKERS) {
+    // Cloudflare Workers 配置
+    nitroOption.preset = "cloudflare-workers"
+    // Workers 环境也需要类似的 unenv 配置
+    nitroOption.unenv = {
+      alias: {
+        "safer-buffer": "node:buffer",
+        "pg-native": "node:buffer",
+        "cloudflare:sockets": "node:buffer",
       },
     }
   }
