@@ -53,7 +53,7 @@ if (process.env.VERCEL || process.env.CF_PAGES) {
   if (process.env.VERCEL) {
     nitroOption.preset = "vercel"
   } else if (process.env.CF_PAGES) {
-    nitroOption.preset = "cloudflare-pages"
+    nitroOption.preset = "Cloudflare Workers"
     // Cloudflare Pages 可能需要这个 unenv 配置
     nitroOption.unenv = {
       alias: {
