@@ -21,6 +21,9 @@ export default defineConfig({
     },
   },
   build: {
+    // 确保输出目录正确
+    outDir: "dist",
+    emptyOutDir: true,
     rollupOptions: {
       output: {
         manualChunks: {
