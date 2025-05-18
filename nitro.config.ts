@@ -59,6 +59,7 @@ if (process.env.VERCEL || process.env.CF_PAGES) {
       alias: {
         "safer-buffer": "node:buffer",
         "pg-native": "node:buffer",
+        "cloudflare:sockets": "node:buffer",
       },
     }
   }
