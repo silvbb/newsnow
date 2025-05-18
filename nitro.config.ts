@@ -51,13 +51,7 @@ const nitroOption: Parameters<typeof viteNitro>[0] = {
 if (process.env.VERCEL || process.env.CF_PAGES) {
   // 根据平台设置预设
   if (process.env.VERCEL) {
-    nitroOption.preset = "vercel-edge"
-    nitroOption.unenv = {
-      // 不要使用展开运算符，直接设置 alias 对象
-      alias: {
-        "pg-native": "", // 或使用 false
-      },
-    }
+    nitroOption.preset = "vercel"
   } else if (process.env.CF_PAGES) {
     nitroOption.preset = "cloudflare-pages"
     // Cloudflare Pages 可能需要这个 unenv 配置
