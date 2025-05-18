@@ -23,7 +23,9 @@
     "release": "bumpp",
     "prepare": "simple-git-hooks",
     "log": "wrangler pages deployment tail --project-name newsnow",
-    "test": "vitest -c vitest.config.ts"
+    "test": "vitest -c vitest.config.ts",
+    "build:workers": "node ./scripts/build-workers.js",
+    "deploy:workers": "node ./scripts/build-workers.js && wrangler deploy"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^1.5.0",

@@ -21,6 +21,10 @@ export default defineConfig({
     },
   },
   build: {
+    // 确保输出目录正确
+    outDir: "dist",
+    // 在构建前清空输出目录，避免旧文件残留
+    emptyOutDir: true,
     rollupOptions: {
       output: {
         manualChunks: {
